@@ -8,7 +8,7 @@ def display_board(board)
 end
 
 def input(board)
-  puts "現在是第#{count_round(board)}回合，輪到#{current_player(count_round(board))}，請輸入棋步（1~9）"
+  puts "現在是第#{count_round(board)}回合，輪到玩家}，請輸入棋步（1~9）"
   player_input = gets.chomp
   position = player_input.to_i - 1
   if position >= 0 && position <= 9
@@ -29,8 +29,13 @@ end
 def play(board)
 #玩家輸入棋步並驗證
   board[input(board)] = current_player(count_round(board))
-#列印出棋盤
-display_board(board)
+#電腦輸入棋步
+  display_board(board)
+  if count_round(board) <= 9 && !check_win(board,count_round(board))
+    puts "現在是第#{count_round(board)}回合，輪到電腦"
+    board[com_play(board)] = current_player(count_round(board))
+    display_board(board)
+  end
 end
 
 #確認回合數
@@ -76,10 +81,24 @@ def check_win(board,counter)
   end
 end
 
+def com_play(board)
+  board_index = Array.new
+  for i in 0..9
+    if board[i] == " "
+      board_index << i
+    end
+  end
+  board_index[rand(board_index.length)]
+end
+
 #確認贏家
 def end_game(board,counter)
   if check_win(board,count_round(board))
-    "遊戲結束，#{current_player(count_round(board) -1 )}獲勝！！"
+    if count_round(board).odd?
+      "遊戲結束，玩家獲勝！！"
+    elsif count_round(board).even?
+      "遊戲結束，玩家獲勝！！"
+    end
   elsif count_round(board) > 9
     "遊戲結束，雙方平手！！"
   end
@@ -89,5 +108,6 @@ board = Array.new(9, " ")
 display_board(board)
 while count_round(board) <= 9 && !check_win(board,count_round(board))
   play(board)
+  com_play(board)
 end
 puts end_game(board,count_round(board))
