@@ -8,7 +8,7 @@ def display_board(board)
 end
 
 def input(board)
-  puts "現在是第#{count_round(board)}回合，輪到玩家}，請輸入棋步（1~9）"
+  puts "現在是第#{count_round(board)}回合，輪到玩家，請輸入棋步（1~9）"
   player_input = gets.chomp
   position = player_input.to_i - 1
   if position >= 0 && position <= 9
@@ -88,7 +88,7 @@ def com_play(board)
       board_index << i
     end
   end
-  board_index[rand(board_index.length)]
+  board_index.sample
 end
 
 #確認贏家
