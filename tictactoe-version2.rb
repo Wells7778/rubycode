@@ -31,7 +31,7 @@ def play(board)
   board[input(board)] = current_player(count_round(board))
 #電腦輸入棋步
   display_board(board)
-  if count_round(board) <= 9 && !check_win(board,count_round(board))
+  if count_round(board) <= 9 && !won?(board)
     puts "現在是第#{count_round(board)}回合，輪到電腦"
     board[com_play(board)] = current_player(count_round(board))
     display_board(board)
@@ -56,57 +56,62 @@ def current_player(counter)
     return "X"
   end
 end
-#電腦輸入棋步
-def check_win(board,counter)
-  if counter >= 3
-    (0...2).each do |i|
-      if board[i] != " " && board[i] == board[i+3] && board[i] == board[i+6]
-        return true
-      end
+WIN_CON = [
+  [0,1,2],
+  [3,4,5],
+  [6,7,8],
+  [0,3,6],
+  [1,4,7],
+  [2,5,8],
+  [0,4,8],
+  [2,4,6]
+]
+def won?(board)
+  WIN_CON.each do |win_combo|
+    if ( board[win_combo[0]] == "X" && board[win_combo[1]] == "X" && board[win_combo[2]] == "X" ) || ( board[win_combo[0]] == "O" && board[win_combo[1]] == "O" && board[win_combo[2]] == "O" )
+      return win_combo
     end
-    [0,3,6].each do |i|
-      if board[i] != " " && board[i] == board[i+1] && board[i] == board[i+2]
-        return true
-      end
-    end
-    if board[0] != " " && board[0] == board[4] && board[0] == board[8]
-      return true
-    end
-    if board[2] != " " && board[2] == board[4] && board[2] == board[6]
-      return true
-    end
-    return false
-  else
-    return false
+  end
+  return false
+end
+# 確認贏家
+def winner(board)
+  win_combo = won?(board)
+  if win_combo
+    return win_combo
   end
 end
+#電腦輸入棋步
 
 def com_play(board)
-  board_index = Array.new
-  for i in 0..9
-    if board[i] == " "
-      board_index << i
-    end
-  end
-  board_index.sample
+  avail_position(board).sample
 end
 
+def avail_position(board)
+  avail_position = Array.new
+  board.each_with_index do |input,index|
+    if input == " "
+      avail_position << index
+    end
+  end
+  avail_position
+end
 #確認贏家
 def end_game(board,counter)
-  if check_win(board,count_round(board))
+  if won?(board)
     if count_round(board).odd?
-      "遊戲結束，玩家獲勝！！"
+      "遊戲結束，電腦獲勝！！"
     elsif count_round(board).even?
       "遊戲結束，玩家獲勝！！"
     end
-  elsif count_round(board) > 9
+  elsif count_round(board) >= 9
     "遊戲結束，雙方平手！！"
   end
 end
 ################################
 board = Array.new(9, " ")
 display_board(board)
-while count_round(board) <= 9 && !check_win(board,count_round(board))
+while count_round(board) <= 9 && !won?(board)
   play(board)
   com_play(board)
 end
